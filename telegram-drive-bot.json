@@ -1,0 +1,1970 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.message.text }}",
+        "returnAll": true,
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          }
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        -2256
+      ],
+      "id": "9c2ca5e3-5396-4036-90d8-397e44a12039",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c003c3e7-c054-4716-a445-a33c0d251dc6",
+              "leftValue": "={{ $('Search files and folders').first().json.hasField('id') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        -2256
+      ],
+      "id": "a19afab6-14f2-463c-b99a-12517ffe72bf",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "❌ No files found matching your search.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        -2160
+      ],
+      "id": "1e586ec9-a0ec-4f6a-b9fa-c1664fd86669",
+      "name": "Send a text message",
+      "webhookId": "3a2d5d81-6468-47eb-9256-1de77b631830",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "={{(()=>{\nconst files = $('Search files and folders').all();\n\nlet message = `Found ${files.length} file(s):\\n\\n`;\nfor (const item of files) {\n  const name = item.json.name;\n  const link = item.json.webViewLink;\n  const createdAt = new Date(item.json.createdTime).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });\n\n  message += `<b>${name}</b>\\n`;\n  message += `Created: ${createdAt}\\n`;\n  message += `<a href=\"${link}\">Open File</a>\\n\\n`;\n}\nreturn message;\n})()}}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        -2336
+      ],
+      "id": "abe01276-0878-4a70-aeb5-9f347fb4e937",
+      "name": "Send a text message1",
+      "webhookId": "22f5e853-5180-4b70-8f00-c146b03f302d",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": false
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -688,
+        -2608
+      ],
+      "id": "903141e7-dc1c-41d1-840e-dbd6c3185770",
+      "name": "Telegram Trigger1",
+      "webhookId": "3e2d9ed8-cbc3-43d9-99d5-4446ac43b12b",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0c8ff0e0-9309-44a8-8e64-a923cd3ecc64",
+              "leftValue": "={{ $json.message.document }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        -2608
+      ],
+      "id": "7c2b8fee-582a-4c58-95f6-6c1a1914f2b7",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b26e363d-1c4a-4c6a-9723-324f221d12b0",
+              "leftValue": "={{ $('Telegram Trigger1').item.json.message.caption }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -2800
+      ],
+      "id": "4547a4a7-8aed-414b-bdb0-fd1d51cf2dad",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Telegram Trigger1').item.json.message.document.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=root",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        -2608
+      ],
+      "id": "924653f1-b6ff-4ae5-8552-eed89d62e584",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Telegram Trigger1').item.json.message.caption }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        608,
+        -2736
+      ],
+      "id": "29c510f4-8c90-4499-9ef4-d240d08d11c1",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "={{ $('Get a file').item.binary.data }}",
+        "name": "={{ $('Telegram Trigger1').item.json.message.document.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        784,
+        -2736
+      ],
+      "id": "de46b55c-8a84-4887-b549-f47a07994000",
+      "name": "Upload file1",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "=name = '{{ $(\"Telegram Trigger1\").item.json.message.caption.trim().replace(/'/g, \"\\\\'\") }}' and mimeType = 'application/vnd.google-apps.folder'",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          }
+        },
+        "options": {
+          "fields": [
+            "mimeType",
+            "id",
+            "name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        -2848
+      ],
+      "id": "37dfe8ae-3f75-4fd3-bc82-36163d8330ab",
+      "name": "Search files and folders1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e704a10-4e84-4751-80c9-f2d45ae7e929",
+              "leftValue": "={{ $('Search files and folders1').first().json.isEmpty() }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -2848
+      ],
+      "id": "04e85ae3-52fb-4182-8c5d-5746b4702971",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "=File {{ $json.name }} Uploaded Successfully!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -2544
+      ],
+      "id": "81c70429-1ea7-4113-b76e-c7c60e6fc416",
+      "name": "Send a text message2",
+      "webhookId": "d1fa46e3-91cb-4ee7-9cd7-a4d969c7e3e8",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger1').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        -2784
+      ],
+      "id": "730d94ca-40cd-4190-ba00-5b8eb86e1e95",
+      "name": "Get a file",
+      "webhookId": "1c5a31e5-e218-4fbf-b072-3feecfe98274",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "={{ $('Get a file').item.binary.data }}",
+        "name": "={{ $('Telegram Trigger1').item.json.message.document.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        576,
+        -2944
+      ],
+      "id": "cc8a9573-40c7-4a74-9ba7-fd871e704b15",
+      "name": "Upload file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "File uploaded on specified folder successfully",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        -2944
+      ],
+      "id": "a089f288-91ee-4142-b7b1-2977d2000076",
+      "name": "Send a text message3",
+      "webhookId": "560d7714-1fcb-4712-934e-7defa9ca7093",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "Created a new folder and uploaded the file.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        -2752
+      ],
+      "id": "22ab56d2-9a4f-4385-823e-1e0b38b54849",
+      "name": "Send a text message4",
+      "webhookId": "710bf7ab-ae56-43f0-9a39-f998863624ed",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1184,
+        1200
+      ],
+      "id": "2bf27e2e-491b-4d70-87f9-0d34418efe46",
+      "name": "Telegram Trigger2",
+      "webhookId": "d2ac2c7c-6234-46c3-b495-5f7eb32f7468",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0b9a485-e7b5-496b-8387-d8abd024c2f1",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/index",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1008,
+        1216
+      ],
+      "id": "d0fca736-6518-40a9-93fe-0a26545739e4",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0c79bfb9-c3e2-4d26-8c2a-931f3d0e4d04",
+              "leftValue": "={{ $json.message.text.split(' ')[0] === \"/index\" && $json.message.text.split(' ').length > 1 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -832,
+        1136
+      ],
+      "id": "57187887-e353-4c5b-a1cc-c5e94f0b8687",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4dd482a-be15-4d79-853f-efd981fcedda",
+              "name": "pdf_name",
+              "value": "={{ $json.message.text.split(' ').slice(1).join(' ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        1104
+      ],
+      "id": "3b36b60c-472e-43fd-a900-7d5c059d5f43",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "=name contains '{{ $('Edit Fields').item.json.pdf_name.replace(/'/g, \"\\\\''\") }}' and mimeType != 'application/vnd.google-apps.folder'",
+        "limit": 10,
+        "filter": {},
+        "options": {
+          "fields": [
+            "id",
+            "name",
+            "webViewLink"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        1120
+      ],
+      "id": "05288449-577a-4dc7-ba06-cc665e9148be",
+      "name": "Search files and folders2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f085e372-eda3-4c5e-b776-9f42aecdc439",
+              "leftValue": "={{ $('Search files and folders2').all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        1120
+      ],
+      "id": "b7f8bbb3-3ba0-406a-93d3-6c1ddccf770f",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger2').item.json.message.chat.id }}",
+        "text": "❌ No files found with that name.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        1216
+      ],
+      "id": "e36606e6-f842-4c6a-93bf-102ae1296815",
+      "name": "Send a text message6",
+      "webhookId": "86099a9f-4583-4a54-8b2d-240e281f1eb2",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1024
+      ],
+      "id": "00cf1294-ad79-4b14-8af2-551f97517ada",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7670379478:AAH1JdG7ApnI4cRFvKmqlARUPw3rRJZ8XJk/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger2').item.json.message.chat.id }}"
+            },
+            {
+              "name": "text",
+              "value": "I found the following files. Choose an action:\nThe left button is for indexing the file, and the right button is for previewing it.\n\nIf you don't see your file listed, please choose the correct name."
+            },
+            {
+              "name": "reply_markup",
+              "value": "={{\n  JSON.stringify({\n    \"inline_keyboard\": $('Aggregate').item.json.data.map(item => ([\n      {\n        \"text\": item.name,\n        \"callback_data\": item.id\n      },\n      {\n        \"text\": \"📄 Preview\",\n        \"url\": item.webViewLink\n      }\n    ]))\n  })\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        1024
+      ],
+      "id": "f2735609-1b15-4d3f-98d4-4db1ba4d6c08",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1200,
+        1488
+      ],
+      "id": "5b9e7d9d-94ee-4c4f-b66e-f1f8aefee239",
+      "name": "Telegram Trigger3",
+      "webhookId": "7fca81fd-6317-4d4c-887d-61e81de37aac",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "messageId": "={{ $json.callback_query.message.message_id }}",
+        "text": "⏳ Indexing the selected file, please wait...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -944,
+        1472
+      ],
+      "id": "36b383f3-9dce-462d-aa2d-04ff88e586c4",
+      "name": "Edit a text message",
+      "webhookId": "535016ed-7d10-4fcc-9d14-19099fcc90ef",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger3').item.json.callback_query.data }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -640,
+        1472
+      ],
+      "id": "46a8c6a6-076f-43fa-bbdc-fc21c079a4dd",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "gb-bot",
+          "mode": "list",
+          "cachedResultName": "gb-bot"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        1472
+      ],
+      "id": "f09f2300-ede4-4546-89de-7a1cb195e158",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "4e95b9IPsC00oVfd",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        1664
+      ],
+      "id": "bac5d8d7-bfa2-45fc-b2de-325573b335a1",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CtNyfNsCVCHCmEGy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $('Telegram Trigger3').item.json.callback_query.data }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ \n  $('Telegram Trigger3').item.json.callback_query.message.reply_markup.inline_keyboard\n    .flat()\n    .find(btn => btn.callback_data === $('Telegram Trigger3').item.json.callback_query.data)\n    ?.text \n}}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        1664
+      ],
+      "id": "0c63b6c2-20cf-4567-bf54-91ffc8e690c8",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        1792
+      ],
+      "id": "68a78ef5-b914-4dff-bfad-12d3add997b5",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1200,
+        2128
+      ],
+      "id": "18d435b0-c993-4cba-b449-abba33a2900f",
+      "name": "Telegram Trigger5",
+      "webhookId": "d2ac2c7c-6234-46c3-b495-5f7eb32f7468",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0b9a485-e7b5-496b-8387-d8abd024c2f1",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/ask",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        2144
+      ],
+      "id": "10c9e0c5-2768-42e8-89f1-61510f0f38af",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4dd482a-be15-4d79-853f-efd981fcedda",
+              "name": "pdf_id",
+              "value": "={{ $json.message.text.split(' ')[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "f049bbe9-46b8-4ca7-8a24-25b4f964a817",
+              "name": "user_question",
+              "value": "={{ $json.message.text.split(' ').slice(2).join(' ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -720,
+        2096
+      ],
+      "id": "4112b52d-8488-4f81-85db-9766497c0f80",
+      "name": "Edit Fields1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Enter the file name too ",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -624,
+        1280
+      ],
+      "id": "257ebe10-aa98-4a69-a4f0-8ad13cf1b907",
+      "name": "Send a text message5",
+      "webhookId": "d86caa17-c95e-46ef-ba19-179e4828b4e9",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "befe87bb-e2c7-4926-813b-8ff505ccd5f5",
+              "leftValue": "={{ $json.user_question }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "6fa52fe8-b066-4a9b-bd1a-fffed2772578",
+              "leftValue": "={{ $json.pdf_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        2032
+      ],
+      "id": "80cd1019-ba52-4709-87c0-e87e48e771cc",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger5').item.json.message.chat.id }}",
+        "text": "Please enter both file name and question",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        1936
+      ],
+      "id": "0af13f61-ca67-474e-a223-220d149ac1ba",
+      "name": "Send a text message7",
+      "webhookId": "c235b0d6-8929-4437-a7e3-f367afe9d9bc",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "gb-bot",
+          "mode": "list",
+          "cachedResultName": "gb-bot"
+        },
+        "prompt": "={{ $('Edit Fields1').item.json.user_question }}",
+        "topK": 10,
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $('Edit Fields1').item.json.pdf_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        2160
+      ],
+      "id": "ebdb2576-1b26-46e6-b989-266585922bb1",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "4e95b9IPsC00oVfd",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        2304
+      ],
+      "id": "8b59f3df-1f36-4af1-98b2-b261ae30b0de",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CtNyfNsCVCHCmEGy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful assistant. Answer the following question based ONLY on the context provided below. If the answer is not in the context, say \"I could not find an answer in that document.\"\n\nCONTEXT:\n{{ $('Pinecone Vector Store1').all().map(item => item.json.document.pageContent).join('\\n---\\n') }}\nQUESTION:\n{{ $('Edit Fields1').item.json.user_question }}\n\nANSWER:"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        2160
+      ],
+      "id": "9c8cd01f-db7d-4186-b7a8-9c54a742d222",
+      "name": "Message a model",
+      "executeOnce": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CtNyfNsCVCHCmEGy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger5').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        2176
+      ],
+      "id": "02eb9146-9ede-42f7-b439-1a5e5bdc85f8",
+      "name": "Send a text message8",
+      "webhookId": "d76a2612-372d-4790-9939-7b19f9795dd8",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger3').item.json.callback_query.message.chat.id }}",
+        "text": "=Indexing is done now use /ask command to ask anything. Here is the id of indexed document. {{ $('Telegram Trigger3').item.json.callback_query.data }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        1472
+      ],
+      "id": "15f3ee22-e190-4127-be35-e8601154c59e",
+      "name": "Send a text message9",
+      "webhookId": "414ab382-6cf9-488c-8fd6-292c3b616ac3",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1264,
+        2592
+      ],
+      "id": "947c988b-7a9c-40e7-bc8f-3bda4f60ed2e",
+      "name": "Telegram Trigger4",
+      "webhookId": "67ecfeb9-5120-4f71-ba6b-8863498ea25d",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0b9a485-e7b5-496b-8387-d8abd024c2f1",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/id",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        2592
+      ],
+      "id": "63277896-c247-4506-80e6-adf008fc97db",
+      "name": "If9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53fb5e11-a53f-47eb-a3c1-15fe29ca0df8",
+              "name": "pdf_name",
+              "value": "={{ $json.message.text.split(' ').slice(1).join(' ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        2496
+      ],
+      "id": "a3bba5ef-f1e0-4484-9853-f442e60a2b2a",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.pdf_name }}",
+        "limit": 20,
+        "filter": {},
+        "options": {
+          "fields": [
+            "name",
+            "webViewLink",
+            "id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        2496
+      ],
+      "id": "14be7504-ec8a-480f-8ea3-ff5109eaf85e",
+      "name": "Search files and folders3",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7b500a29-a367-475c-822e-cad0822eb08d",
+              "leftValue": "={{ 'id' in $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        2496
+      ],
+      "id": "637fb483-34dc-4758-9cc1-c2ef1d2b5021",
+      "name": "If10"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger4').item.json.message.chat.id }}",
+        "text": "Enter the name correctly. Now files found",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        2592
+      ],
+      "id": "bf681755-544b-45cd-9edb-b3b600712d3d",
+      "name": "Send a text message10",
+      "webhookId": "bac53296-2a99-4577-97d8-17495d50da89",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger4').item.json.message.chat.id }}",
+        "text": "={{\n  $input.all().map(item =>\n    `**Name:** ${item.json.name}\\n**ID:** \\`${item.json.id}\\`\\n**Preview:** [View File](${item.json.webViewLink})`\n  ).join('\\n\\n')\n}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        2448
+      ],
+      "id": "060e7e65-9e8d-4d8b-ac58-e43cc3f19d09",
+      "name": "Send a text message11",
+      "webhookId": "d2867422-2e64-46b1-bd64-f7f8bf9bc522",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9c0c9959-e296-4db1-a962-3cf4adeffba9",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -2512
+      ],
+      "id": "344d9aca-bead-4038-9598-a72aff4fd4ae",
+      "name": "If11"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "=<b>Welcome to GD-Bot!</b> 🤖\n\nThis bot connects your Telegram chat directly to your Google Drive for easy file management.\n\n<b>Available Commands & Features:</b>\n\n📤 <b>Uploading Files</b>\n• <i>Direct Upload:</i> Simply send any document file (PDF, DOCX, etc.) to the chat. It will be saved in your main Google Drive folder.\n\n• <i>Upload to Folder:</i> Send a file and add the desired folder name as a <b>caption</b> in the same message. If the folder exists, the file goes there. If not, the folder will be created for you.\n\n🔍 <b>Finding Files</b>\n• Send any text message that isn't a command. The bot will search your Drive for files containing that text in their name.",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -2608
+      ],
+      "id": "51c51d3d-2289-4dd1-8fe9-38f7870275df",
+      "name": "Send a text message12",
+      "webhookId": "704e89d1-34a6-428b-a66e-8d4a85dfdc26",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Upload file2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger2": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders2": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger3": {
+      "main": [
+        [
+          {
+            "node": "Edit a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit a text message": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Send a text message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger5": {
+      "main": [
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Send a text message7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger4": {
+      "main": [
+        [
+          {
+            "node": "If9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If9": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders3": {
+      "main": [
+        [
+          {
+            "node": "If10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If10": {
+      "main": [
+        [
+          {
+            "node": "Send a text message11",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If11": {
+      "main": [
+        [
+          {
+            "node": "Send a text message12",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "39718351-8c97-45a6-95da-2781da0aa1b9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3c14362eda5d8d90da31670e4c03b52fdfa1c5853fd4bde0af69e8ecfcd4f529"
+  },
+  "id": "dVSwMxuyf6hSxeEI",
+  "tags": []
+}
