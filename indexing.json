@@ -1,0 +1,276 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -528,
+        -32
+      ],
+      "id": "269ae470-1c22-4cfb-b061-4e179f4a3522",
+      "name": "Telegram Trigger3",
+      "webhookId": "7fca81fd-6317-4d4c-887d-61e81de37aac",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "messageId": "={{ $json.callback_query.message.message_id }}",
+        "text": "⏳ Indexing the selected file, please wait...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        -48
+      ],
+      "id": "e5c6a98a-de26-4527-915e-3dae4008e1a5",
+      "name": "Edit a text message",
+      "webhookId": "535016ed-7d10-4fcc-9d14-19099fcc90ef",
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger3').item.json.callback_query.data }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        32,
+        -48
+      ],
+      "id": "ac8eef89-b476-4310-ad5f-3bd16c7b271d",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vi4ijpJc8xpPTsAl",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "gd-bot",
+          "mode": "list",
+          "cachedResultName": "gd-bot"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "279ab507-f46b-4a35-a218-a94a64987de2",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "4e95b9IPsC00oVfd",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        144
+      ],
+      "id": "a9e41272-4f4e-4467-8107-871ab6afd3a9",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CtNyfNsCVCHCmEGy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $('Telegram Trigger3').item.json.callback_query.data }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ \n  $('Telegram Trigger3').item.json.callback_query.message.reply_markup.inline_keyboard\n    .flat()\n    .find(btn => btn.callback_data === $('Telegram Trigger3').item.json.callback_query.data)\n    ?.text \n}}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        144
+      ],
+      "id": "7dd7745a-b89a-4516-bf39-7c6dd850fe94",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        560,
+        272
+      ],
+      "id": "ca6937ce-f41d-4af4-957e-1602932dabe2",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger3').item.json.callback_query.message.chat.id }}",
+        "text": "=Indexing is done now use /ask command to ask anything. Here is the id of indexed document. {{ $('Telegram Trigger3').item.json.callback_query.data }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -48
+      ],
+      "id": "e42b5049-221b-4107-b3e3-4252df3045fc",
+      "name": "Send a text message9",
+      "webhookId": "414ab382-6cf9-488c-8fd6-292c3b616ac3",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "RqvOno0bT9ZPLsbp",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger3": {
+      "main": [
+        [
+          {
+            "node": "Edit a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit a text message": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Send a text message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00c47efe-34a2-4f03-956e-43d702b61fe7",
+  "meta": {
+    "instanceId": "3c14362eda5d8d90da31670e4c03b52fdfa1c5853fd4bde0af69e8ecfcd4f529"
+  },
+  "id": "c4aJ6V23p9Zr4J75",
+  "tags": []
+}
