@@ -6,7 +6,7 @@ This project features an intelligent Telegram Bot, built entirely on the low-cod
 
 This workflow acts as the central "brain" of the bot. It's triggered by all text messages (`message:text`) and uses a Switch node to route user commands like `/index`, `/ask`, and `/help`. Its primary job is to handle synchronous requests and present the user with interactive button choices.
 
-### Indexing Callback Workflow (`callback.json`)
+### Indexing Callback Workflow (`indexing.json`)
 
 This specialized workflow acts as a "listener." It is triggered _only_ by button clicks (`callback_query`) from the main workflow. This allows it to handle slow, asynchronous tasks like indexing a document without blocking the main chat interface.
 
@@ -27,7 +27,6 @@ This bot solves that problem by creating a centralized, organized, and searchabl
 - **🧠 AI-Powered Chat (RAG):**
   - **/index <file name>:** Prepares a document for AI chat. The bot searches your Drive and presents an interactive list of matching files for you to confirm, ensuring you index the correct one.
   - **/ask <file name> <question>:** Ask a question about an _already indexed_ document. The bot uses a Retrieval-Augmented Generation (RAG) pipeline to find the relevant context within the file and generate a precise answer.
-  - **Session Management:** Start a chat session using `/chat` to browse indexed files. Once a session is active, you can ask multiple questions without restating the filename. The session ends with `/end`.
 - **🤖 User-Friendly Interface:**
   - A comprehensive `/help` command to guide users.
   - Interactive buttons for selecting files, making the experience seamless.
@@ -47,9 +46,9 @@ This project uses an event-driven, two-workflow architecture to handle different
 1.  **Workflow 1: Main Router (`main_workflow.json`)**
 
     - **Trigger:** `message:text`
-    - **Responsibility:** Handles all text-based commands (`/index`, `/chat`, `/id`, `/help`, `/end`) and default text searches. It's the main "router" that directs user intent. It's also responsible for sending messages with interactive buttons.
+    - **Responsibility:** Handles all text-based commands (`/index`, `/ask`, `/id`, `/help`) and default text searches. It's the main "router" that directs user intent. It's also responsible for sending messages with interactive buttons.
 
-2.  **Workflow 2: Callback Catcher (`callback_workflow.json`)**
+2.  **Workflow 2: Callback Catcher (`indexing.json`)**
     - **Trigger:** `callback_query`
     - **Responsibility:** This workflow acts as a "listener." It wakes up _only_ when a user clicks an inline button (e.g., choosing a file to index or chat with). It then performs the corresponding action, like running the expensive indexing pipeline or starting a chat session.
 
@@ -72,7 +71,7 @@ Follow these steps to get your own instance of the bot running.
 1.  **Import Workflows:**
 
     - In your n8n dashboard, create two new blank workflows.
-    - For each one, go to `Workflow > Import from File` and import `main_workflow.json` and `callback_workflow.json`.
+    - For each one, go to `Workflow > Import from File` and import `main.json` and `indexing.json`.
 
 2.  **Configure Credentials:**
 
@@ -100,5 +99,4 @@ Interact with your bot in Telegram:
 - **Search:** Type part of a filename.
 - **Index a File:** `/index <file name>`
 - **Ask a Question (in a session):** `/ask What is the main point of this document?`
-- **End a Session:** `/end`
 - **Get Help:** `/help`
