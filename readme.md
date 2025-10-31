@@ -6,9 +6,13 @@ This project features an intelligent Telegram Bot, built entirely on the low-cod
 
 This workflow acts as the central "brain" of the bot. It's triggered by all text messages (`message:text`) and uses a Switch node to route user commands like `/index`, `/ask`, and `/help`. Its primary job is to handle synchronous requests and present the user with interactive button choices.
 
+<img width="1169" height="757" alt="main-workflow" src="https://github.com/user-attachments/assets/f7575f5f-df62-4434-af4f-641de67b7f29" />
+
 ### Indexing Callback Workflow (`indexing.json`)
 
 This specialized workflow acts as a "listener." It is triggered _only_ by button clicks (`callback_query`) from the main workflow. This allows it to handle slow, asynchronous tasks like indexing a document without blocking the main chat interface.
+
+<img width="1444" height="674" alt="indexing" src="https://github.com/user-attachments/assets/7edbd146-89fd-48b3-ad82-95a3278f2b1f" />
 
 ## 🎯 The Problem Solved
 
